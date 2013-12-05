@@ -1,0 +1,10 @@
+#!/bin/bash
+issueno=$(git branch | grep ^*  | awk '{print $2}' | awk -F _ '{print $2}')
+if [ "$issueno" == "" ];then
+  if [ -f ".git/rebase-merge/head-name" ];then
+    issueno=$(<.git/rebase-merge/head-name)
+    issueno=${issueno#*_}
+    issueno=${issueno%%_*}
+  fi
+fi
+echo -n $issueno

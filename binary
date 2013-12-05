@@ -1,0 +1,13 @@
+#!/usr/bin/perl
+
+$flag=0;
+$j=0;
+while(<>){
+  for($i=0;$i<length($_);$i++){
+    if($j++==16){$j=1;print "\n";}
+    printf "%02x",unpack("C",substr($_,$i,1));
+    $flag=1;
+  }
+}
+print "input file as STDIN" if !$flag;
+print "\n";

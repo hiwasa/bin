@@ -1,0 +1,29 @@
+#!/bin/bash
+
+arg=()
+amend=false
+while [ "$1" != "" ];do
+  if [ "$1" == "--amend" ];then
+    amend=true
+  else
+    arg[${#arg[@]}]=$1
+  fi
+  shift
+done
+
+if $amend;then
+  issueno=$(get_issueno)
+  if [ "$issueno" != "" ];then
+    arg[0]="refs #"$issueno" "${arg[0]}
+  fi
+  git commit --amend -m "${arg[0]}"
+else
+  issueno=$(get_issueno)
+  if [ "$issueno" ] ; then
+      git commit -m "refs #$issueno ${arg[*]}"
+  else
+      # issnuenoが取得できないときは、
+      # gcmと全く同じ挙動。
+      git commit -m "${arg[*]}"
+  fi
+fi
