@@ -1,0 +1,12 @@
+#!/bin/env zsh
+
+if [ "$1" = "" ];then
+    echo -en "usage: ${0##*/} file [hash]\n diff-ignored -- show diff between current diff and target branch (defalut HEAD)\n"
+    return
+fi
+if [ "$2" = "" ];then
+    branch="HEAD"
+else
+    branch=$2
+fi
+diff <(git show ${branch}:$1) <(cat $1)

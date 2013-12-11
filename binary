@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+if(-t STDIN){print "input file as STDIN\n";exit;}
+
 $flag=0;
 $j=0;
 while(<>){
@@ -9,5 +11,4 @@ while(<>){
     $flag=1;
   }
 }
-print "input file as STDIN" if !$flag;
 print "\n";

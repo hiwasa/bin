@@ -1,6 +1,6 @@
-#!/usr/bash
+#!/bin/bash
 
-if [ -z "$1" ];then echo input hash;exit(1);fi
+if [ -z "$1" ];then echo -en "usage: ${0##*/} hash [options..]\n git log tree -- show structure of merged tree\n";exit 1;fi
 hash=$1
 shift
-git l $hash^1..$hash^2 "$*"
+git l $hash^1..$hash^2 $*

@@ -1,0 +1,43 @@
+if [ "$1" = "" -o "$2" = "" ];then
+    echo -e "usage: ${0##*/} branch file...\nless argument"
+    exit
+fi
+BRANCH=$1
+shift
+IGNORES=()
+for F in $*;do
+    if [ "$(git help recog)" ];then
+        git recog "$F"
+    else
+        git update-index --no-skip-worktree
+    fi
+    if [ "$(git status -s)" ];then
+        IGNORES=("${IGNORES[@]}" $F)
+    else
+        echo error in recog
+        break
+    fi
+done
+git stash
+if [ $? -ne 0 ];then
+    echo error in save
+    BRANCH=""
+else
+    git checkout "${BRANCH}"
+    if [ $? -ne 0 ];then
+        echo error in checkout
+    fi
+fi
+if [ "${BRANCH}" ];then
+    git stash pop > /dev/null
+    if [ $? -ne 0 ];then
+        echo error in pop
+    fi
+fi
+for F in ${IGNORES[@]};do
+    if [ "$(git help ignore)" ];then
+        git ignore "$F"
+    else
+        git update-index --skip-worktree
+    fi
+done

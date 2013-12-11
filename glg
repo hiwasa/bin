@@ -1,0 +1,9 @@
+#!/bin/bash
+
+if [ "$1" = "" ];then
+ echo -en "usage: ${0##*/} regex [option..]\n git log grep\n"
+ exit 1
+fi
+Q=$1
+shift
+git l --grep="$Q" $*
