@@ -2,8 +2,20 @@
 
 if(-t){
  $0=~s#.*/##;
- print "usage: (some-command) | $0\n get diff of diff -- difference between added and deleted\n";
+ print << "--USAGE--";
+usage: (some-command) | $0
+ get diff of diff -- difference between added and deleted
+
+options:
+ -w : ignore white spaces
+--USAGE--
  exit;
+}
+
+my(@flg,@line,@lin1,@lin2);
+@flg=();
+foreach(@ARGV){
+ if($_ eq '-w'){$flg[0]=1;}
 }
 
 @line=<STDIN>;
@@ -13,12 +25,14 @@ foreach(@line){
  if(/^[\+>]([\x00-\xff]*)/){push(@lin2,$1);}
 }
 if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
-&diff(\@lin1,\@lin2);
+&diff(\@lin1,\@lin2,\@flg);
 
 sub diff{
- my($i,$j,$c,$ret,@line1,@line2);
+ my($i,$j,$c,$ret,@line1,@line2,@tl1,@tl2);
  $i=0;$j=0;
+ @tl1=@{$_[0]};@tl2=@{$_[1]};
  @line1=@{$_[0]};@line2=@{$_[1]};
+ if($flg[0]){foreach(@line1){s/\s//g;}foreach(@line2){s/\s//g;}}
  $ret='';
  while($i<@line1 || $j<@line2){
   if($line1[$i] eq $line2[$j]){
@@ -26,15 +40,15 @@ sub diff{
   }else{
    my($ti,$tj);
    $ti=$i;$tj=$j;
-   search:while($ti<@line1 && $tj<@line2){
+   search:while($ti<@line1 || $tj<@line2){
     $ti++;$tj++;
     my($tti,$ttj);
-    for($tti=$i,$ttj=$j;$tti<=$ti && $ttj<=$tj;$tti++,$ttj++){
-     if($line1[$tti] eq $line2[$tj]){
+    for($tti=$i,$ttj=$j;$tti<=$ti || $ttj<=$tj;$tti++,$ttj++){
+     if($tti<@line1 && $line1[$tti] eq $line2[$tj]){
       $ti=$tti;
       last search;
      }
-     if($line1[$ti] eq $line2[$ttj]){
+     if($ttj<@line2 && $line1[$ti] eq $line2[$ttj]){
       $tj=$ttj;
       last search;
      }
@@ -50,12 +64,12 @@ sub diff{
    print $j+1<$tj?int($j+1).",$tj":$tj;
    print "\n";
    while($i<$ti){
-    print "< $line1[$i]";
+    print "< $tl1[$i]";
     $i++;
    }
    print "---\n" if $f==2;
    while($j<$tj){
-    print "> $line2[$j]";
+    print "> $tl2[$j]";
     $j++;
    }
   }

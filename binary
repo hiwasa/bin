@@ -1,12 +1,24 @@
 #!/usr/bin/perl
 
-if(-t STDIN){print "input file as STDIN\n";exit;}
+if(-t STDIN){print << "--INFO--";
+input file as STDIN
+option:
+ -l newline at '\\n' code, not explicit length
+--INFO--
+exit;}
+
+my @flg=();
+while(@ARGV){
+  my $k=shift(@ARGV);
+  if($k eq '-l'){$flg[0]=1;}
+}
 
 $flag=0;
 $j=0;
 while(<>){
   for($i=0;$i<length($_);$i++){
-    if($j++==16){$j=1;print "\n";}
+    if(!$flg[0] && $j++==16){$j=1;print "\n";}
+    if($flg[0] && substr($_,$i,1) eq "\n"){print "\n";next;}
     printf "%02x",unpack("C",substr($_,$i,1));
     $flag=1;
   }

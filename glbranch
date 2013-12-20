@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [ "$1" = "--help" -o "$1" = "-h" ];then echo -en "usage: ${0##*/} hash [options..]\n git log tree -- show structure of merged tree\n";exit 1;fi
+if [ "$1" = "" ];then
+ hash=HEAD
+else
+ hash=$1
+fi
+git rev-parse $hash 1>/dev/null 2>/dev/null
+if [ $? -gt 0 ];then echo -en "'$hash' is not something represents commit\nuse -h or --help\n";exit;fi
+shift
+git l $hash^1..$hash $*
