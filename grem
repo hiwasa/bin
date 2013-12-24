@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$1" = "" ];then
+ echo -en '$0 dir [option] [command]\noption:\n -d name : dir name for .git\n'
+fi
+dir=$1
+shift
+array=()
+gitdir=".git"
+while [ "$1" != "" ];do
+ if [ "$1" = "-d" ];then
+  shift
+  gitdir=$1
+ else
+  array+=("$1")
+ fi
+ shift
+done
+git --work-tree=$dir --git-dir=$dir/$gitdir "${array[@]}"
