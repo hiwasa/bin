@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$1" = "--help" -o "$1" = "-h" ];then echo -en "usage: ${0##*/} hash [options..]\n git log tree -- show structure of merged tree\n";exit 1;fi
+if [ "$1" = "--help" -o "$1" = "-h" ];then echo -en "usage: ${0##*/} hash [options..]\n git log tree -- show structure of merged tree\n\n options:\n  options for git-log\n";exit 0;fi
 if [ "$1" = "" ];then
  hash=HEAD
 else
@@ -9,4 +9,8 @@ fi
 git rev-parse $hash 1>/dev/null 2>/dev/null
 if [ $? -gt 0 ];then echo -en "'$hash' is not something represents commit\nuse -h or --help\n";exit;fi
 shift
-git l $hash^1..$hash $*
+if [ "$(git log -1 $hash --pretty='%p' | sed -e '/ /d')" = "" ];then
+ git l $hash^1..$hash $*
+else
+ echo $hash is not a merge-commit.
+fi

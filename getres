@@ -1,0 +1,3 @@
+#!/bin/bash
+
+ps h -o rss -p `ps h -o ppid -p $$`|sed 's/$/ kB/'
