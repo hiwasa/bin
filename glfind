@@ -12,7 +12,7 @@ while [ "$(git log -1 $head --pretty='%p')" != "" -a "$(git log -1 $head..$hash 
  prevhead=$head
  while [ $head = $prevhead -o "$(git log -1 $head --pretty='%p'|sed -e '/ /p;d')" = "" ];do
   head=$(git rev-parse $head^1 2>/dev/null)
-  if [ $head = $hash ];then break;fi
+  if [ $head = $hash ];then prevhead=$head;break 2;fi
  done
 done
 echo $prevhead
