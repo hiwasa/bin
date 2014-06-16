@@ -1,9 +1,10 @@
 #!/bin/env perl
 
 #git branch|grep $GIT_BRANCH_PREFIX|perl -ne 's/..//;print;print `git l trunk..$_`;'
-@arr=`git branch|grep '$ENV{'GIT_BRANCH_PREFIX'}_[0-9]'`;
+@arr=`git branch --list "$ENV{'GIT_BRANCH_PREFIX'}_[0-9]*"`;
 foreach(@arr){
 s/^\*?\s+//;
+print "(pushed) " if `git branch --list -r origin/$_`;
 print;
 print `git l @ARGV trunk..$_`;
 }
