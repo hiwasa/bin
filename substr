@@ -1,0 +1,5 @@
+#!/bin/env perl
+
+if($ARGV[0]<1){print "require arg 1\n";exit 1;}
+if($ARGV[1]){$s=$ARGV[0];$e=$ARGV[1];}else{$s=0;$e=$ARGV[0];}
+while(<STDIN>){chomp;print substr($_,$s,$e)."\n";}
