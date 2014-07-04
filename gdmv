@@ -19,10 +19,13 @@ foreach(@ARGV){
 }
 
 @line=<STDIN>;
+$delimtype=0;
 foreach(@line){
  s/\x1b\[\d*m//g;
- if(/^[\-<]([\x00-\xff]*)/){push(@lin1,$1);}
- if(/^[\+>]([\x00-\xff]*)/){push(@lin2,$1);}
+ if($delimtype!=2 && /^\-([\x00-\xff]*)/){push(@lin1,$1);$delimtype=1;}
+ if($delimtype!=2 && /^\+([\x00-\xff]*)/){push(@lin2,$1);$delimtype=1;}
+ if($delimtype!=1 && /^< ([\x00-\xff]*)/){push(@lin1,$1);$delimtype=2;}
+ if($delimtype!=1 && /^> ([\x00-\xff]*)/){push(@lin2,$1);$delimtype=2;}
 }
 if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
 &diff(\@lin1,\@lin2,\@flg);
