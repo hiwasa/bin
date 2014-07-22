@@ -5,6 +5,7 @@ if [ "$1" = "" ];then
 fi
 dir=$1
 shift
+if [ "${dir:0:1}" != "/" ];then dir=$(pwd)'/'${dir};fi
 array=()
 gitdir=".git"
 while [ "$1" != "" ];do
