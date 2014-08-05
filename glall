@@ -1,4 +1,4 @@
-#!/bin/env perl
+#!/usr/bin/env perl
 
 #git branch|grep $GIT_BRANCH_PREFIX|perl -ne 's/..//;print;print `git l trunk..$_`;'
 @arr=`git branch --list "$ENV{'GIT_BRANCH_PREFIX'}_[0-9]*"`;

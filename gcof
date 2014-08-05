@@ -1,3 +1,5 @@
+#!/bin/bash
+
 if [ "$1" = "" -o "$2" = "" ];then
     echo -e "usage: ${0##*/} branch file...\nless argument"
     exit

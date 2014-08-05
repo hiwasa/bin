@@ -1,4 +1,4 @@
-#!/bin/env zsh
+#!/usr/bin/env zsh
 
 if [ "$1" = "" ];then
     echo -en "usage: ${0##*/} file [hash]\n diff-ignored -- show diff between current diff and target branch (defalut HEAD)\n"

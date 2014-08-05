@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 if(-t STDIN){print << "--INFO--";
 input file as STDIN
