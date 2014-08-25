@@ -6,29 +6,38 @@ if(-t){
 usage: (some-command) | $0
  get diff of diff -- difference between added and deleted
 
+args:
+ iteration : iteration count
+
 options:
  -w : ignore white spaces
 --USAGE--
  exit;
 }
 
-my(@flg,@line,@lin1,@lin2);
+my($depth,@flg,@line,@lin1,@lin2);
 @flg=();
 foreach(@ARGV){
  if($_ eq '-w'){$flg[0]=1;}
+ elsif(!defined($depth)){$depth=$_;}
 }
+$depth=1 if $depth<1;
 
 @line=<STDIN>;
-$delimtype=0;
-foreach(@line){
- s/\x1b\[\d*m//g;
- if($delimtype!=2 && /^\-([\x00-\xff]*)/){push(@lin1,$1);$delimtype=1;}
- if($delimtype!=2 && /^\+([\x00-\xff]*)/){push(@lin2,$1);$delimtype=1;}
- if($delimtype!=1 && /^< ([\x00-\xff]*)/){push(@lin1,$1);$delimtype=2;}
- if($delimtype!=1 && /^> ([\x00-\xff]*)/){push(@lin2,$1);$delimtype=2;}
+foreach(1..$depth){
+ my (@lin1,@lin2);
+ $delimtype=0;
+ foreach(@line){
+  s/\x1b\[\d*m//g;
+  if($delimtype!=2 && /^\-([\x00-\xff]*)/){push(@lin1,$1);$delimtype=1;}
+  if($delimtype!=2 && /^\+([\x00-\xff]*)/){push(@lin2,$1);$delimtype=1;}
+  if($delimtype!=1 && /^< ([\x00-\xff]*)/){push(@lin1,$1);$delimtype=2;}
+  if($delimtype!=1 && /^> ([\x00-\xff]*)/){push(@lin2,$1);$delimtype=2;}
+ }
+ if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
+ @line=&diff(\@lin1,\@lin2,\@flg);
 }
-if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
-print &diff(\@lin1,\@lin2,\@flg);
+print @line;
 
 sub diff{
  my($i,$j,$c,$ret,@line1,@line2,@tl1,@tl2);
