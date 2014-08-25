@@ -28,7 +28,7 @@ foreach(@line){
  if($delimtype!=1 && /^> ([\x00-\xff]*)/){push(@lin2,$1);$delimtype=2;}
 }
 if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
-&diff(\@lin1,\@lin2,\@flg);
+print &diff(\@lin1,\@lin2,\@flg);
 
 sub diff{
  my($i,$j,$c,$ret,@line1,@line2,@tl1,@tl2);
@@ -60,23 +60,25 @@ sub diff{
    if($ti>=@line1){$tj=@line2;}
    if($tj>=@line2){$ti=@line1;}
    my $f;
-   print $i+1<$ti?int($i+1).",$ti":$ti;
-   if($i==$ti){print "a";$f=0;}
-   elsif($j==$tj){print "d";$f=1;}
-   else{print "c";$f=2;}
-   print $j+1<$tj?int($j+1).",$tj":$tj;
-   print "\n";
+   $ret.=$i+1<$ti?int($i+1).",$ti":$ti;
+   if($i==$ti){$ret.="a";$f=0;}
+   elsif($j==$tj){$ret.="d";$f=1;}
+   else{$ret.="c";$f=2;}
+   $ret.=$j+1<$tj?int($j+1).",$tj":$tj;
+   $ret.="\n";
    while($i<$ti){
-    print "< $tl1[$i]";
+    $ret.="< $tl1[$i]";
     $i++;
    }
-   print "---\n" if $f==2;
+   $ret.="---\n" if $f==2;
    while($j<$tj){
-    print "> $tl2[$j]";
+    $ret.="> $tl2[$j]";
     $j++;
    }
   }
   $i++;$j++;
  }
- print "no deference\n" if $c==@line1 || $c==@line2;
+ $ret.="no deference\n" if $c==@line1 || $c==@line2;
+
+ return split(/(?<=\n)/,$ret);
 }
