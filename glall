@@ -1,10 +1,8 @@
-#!/usr/bin/env perl
+#!/bin/bash
 
-#git branch|grep $GIT_BRANCH_PREFIX|perl -ne 's/..//;print;print `git l trunk..$_`;'
-@arr=`git branch --list "$ENV{'GIT_BRANCH_PREFIX'}_[0-9]*"`;
-foreach(@arr){
-s/^\*?\s+//;
-print "(pushed) " if `git branch --list -r origin/$_`;
-print;
-print `git l @ARGV trunk..$_`;
-}
+git for-each-ref --format='%(refname:short)' refs/heads|grep $GIT_BRANCH_PREFIX'_[0-9]'|while read line;do
+echo -n $line
+if git show-ref -q origin/$line;then echo -ne "(pushed)";fi
+echo
+git l "$@" origin..$line
+done
