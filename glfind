@@ -12,18 +12,19 @@ hash=$(git rev-parse $hash)
 hashes=($(git log $head --first-parent --pretty='format:%H'))
 hashlast=${#hashes[@]}
 i=$(expr $hashlast / 2)
-j=$(expr $i / 2)
+j=$i
+k=0
 while [ $j -gt 0 -a $hash != $hashes[$i] ];do
-ret=$(git log -1 ${hashes[$i]}..$hash --pretty='%H')
-echo "$i,$j $hash=$ret ${hashes[$i]}"
+ ret=$(git log -1 ${hashes[$i]}..$hash --pretty='%H')
+echo "$i,$j ${hashes[$i]}=$ret ${hashes[$i]}"
+ k=$(expr $j % 2)
+ j=$(expr $j / 2)
  if [ "$ret" = $hash ];then
-  i=$(expr $i - $j - $i % 2)
-  j=$(expr $j / 2)
+  i=$(expr $i - $j - $k)
 echo '-'
  else
   i=$(expr $i + $j)
-  j=$(expr $j + 1)
-  j=$(expr $j / 2)
+  j=$(expr $j + $k)
 echo '+'
  fi
 done
