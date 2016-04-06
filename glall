@@ -5,5 +5,5 @@ if git show-ref -q origin/$line;then echo -ne "\x1b[34m";fi
 echo -n $line
 if git show-ref -q origin/$line;then echo -ne "(pushed)\x1b[m";fi
 echo
-git l "$@" origin..$line
+git l origin..$line "$@"
 done
