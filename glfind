@@ -8,12 +8,25 @@ if [ "$type" != 'commit' ];then echo -en "'$hash' is not something represents co
 shift
 head=$(git rev-parse $head)
 hash=$(git rev-parse $hash)
-prevhead=$head
-while [ "$(git log -1 $head --pretty='%p')" != "" -a "$(git log -1 $head..$hash --pretty='%H')" != $hash ];do
- prevhead=$head
- while [ $head = $prevhead -o "$(git log -1 $head --pretty='%p'|sed -e '/ /p;d')" = "" ];do
-  head=$(git rev-parse $head^1 2>/dev/null)
-  if [ $head = $hash ];then prevhead=$head;break 2;fi
- done
+
+hashes=($(git log $head --first-parent --pretty='format:%H'))
+hashlast=${#hashes[@]}
+i=$(expr $hashlast / 2)
+j=$(expr $i / 2)
+while [ $j -gt 0 -a $hash != $hashes[$i] ];do
+ret=$(git log -1 ${hashes[$i]}..$hash --pretty='%H')
+echo "$i,$j $hash=$ret ${hashes[$i]}"
+ if [ "$ret" = $hash ];then
+  i=$(expr $i - $j - $i % 2)
+  j=$(expr $j / 2)
+echo '-'
+ else
+  i=$(expr $i + $j)
+  j=$(expr $j + 1)
+  j=$(expr $j / 2)
+echo '+'
+ fi
 done
-echo $prevhead
+while [ ${hashes[$i]} != $hash -a "$(git log -1 ${hashes[$i]} --pretty='%p'|grep ' ')" = "" ];do i=$(expr $i - 1);done
+echo ${hashes[$i]}
+exit
