@@ -1,12 +1,37 @@
-#!/usr/bin/env zsh
+#!/bin/bash
 
-if [ "$1" = "" ];then
+c=0
+file=""
+branch="HEAD"
+gitfile=""
+arg=""
+while [ "$1" != "" ];do
+    if [ ${1:0:1} = '-' ];then
+        arg="$arg $1"
+    else
+        if [ $c -eq 0 ];then
+            file=$1
+            c=1
+        elif [ $c -eq 1 ];then
+            branch=$1
+            c=2
+        elif [ $c -eq 2 ];then
+            gitfile=$1
+            c=3
+        fi
+    fi
+    shift
+done
+
+if [ $c -lt 3 -o "$gitfile" = "" ];then
+    gitfile=$file
+fi
+
+if [ "$file" = "" ];then
     echo -en "usage: ${0##*/} file [hash]\n diff-ignored -- show diff between current diff and target branch (defalut HEAD)\n"
     return
 fi
-if [ "$2" = "" ];then
-    branch="HEAD"
-else
-    branch=$2
-fi
-diff <(git show ${branch}:$1) <(cat $1)
+
+if [ ! -e $file ];then echo "no file $file exist";exit 1;fi
+
+diff $arg <(git show ${branch}:$gitfile) <(cat $file)
