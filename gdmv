@@ -1,9 +1,8 @@
-#!/usr/bin/env perl
-
-if(-t){
- $0=~s#.*/##;
- print << "--USAGE--";
-usage: (some-command) | $0
+#!/bin/bash
+if [ -t 0 ];then
+ this_cmd=${0##*/}
+ cat << --USAGE--
+usage: (some-command) | $this_cmd
  get diff of diff -- difference between added and deleted
 
 args:
@@ -12,82 +11,24 @@ args:
 options:
  -w : ignore white spaces
 --USAGE--
- exit;
-}
+ exit 1
+fi
 
-my($depth,@flg,@line,@lin1,@lin2);
-@flg=();
-foreach(@ARGV){
- if($_ eq '-w'){$flg[0]=1;}
- elsif(!defined($depth)){$depth=$_;}
-}
-$depth=1 if $depth<1;
 
-@line=<STDIN>;
-foreach(1..$depth){
- my (@lin1,@lin2);
- $delimtype=0;
- foreach(@line){
-  s/\x1b\[\d*m//g;
-  if($delimtype!=2 && /^\-([\x00-\xff]*)/){push(@lin1,$1);$delimtype=1;}
-  if($delimtype!=2 && /^\+([\x00-\xff]*)/){push(@lin2,$1);$delimtype=1;}
-  if($delimtype!=1 && /^< ([\x00-\xff]*)/){push(@lin1,$1);$delimtype=2;}
-  if($delimtype!=1 && /^> ([\x00-\xff]*)/){push(@lin2,$1);$delimtype=2;}
- }
- if(!@lin1 || !@lin2){print "no diff line found -- maybe something mistaken\n";exit(1);}
- @line=&diff(\@lin1,\@lin2,\@flg);
-}
-print @line;
+it=1
+wflag=''
+while [ "$1" != "" ];do
+ if [ "$1" = "-w" ];then
+  wflag='-w'
+ elif echo "$1" | grep '^[0-9]*$' >/dev/null;then
+  it=$1
+ else echo "invalid arg $1";fi
+ shift
+done
 
-sub diff{
- my($i,$j,$c,$ret,@line1,@line2,@tl1,@tl2);
- $i=0;$j=0;
- @tl1=@{$_[0]};@tl2=@{$_[1]};
- @line1=@{$_[0]};@line2=@{$_[1]};
- if($flg[0]){foreach(@line1){s/\s//g;}foreach(@line2){s/\s//g;}}
- $ret='';
- while($i<@line1 || $j<@line2){
-  if($line1[$i] eq $line2[$j]){
-   $c++;
-  }else{
-   my($ti,$tj);
-   $ti=$i;$tj=$j;
-   search:while($ti<@line1 || $tj<@line2){
-    $ti++;$tj++;
-    my($tti,$ttj);
-    for($tti=$i,$ttj=$j;$tti<=$ti || $ttj<=$tj;$tti++,$ttj++){
-     if($tti<@line1 && $line1[$tti] eq $line2[$tj]){
-      $ti=$tti;
-      last search;
-     }
-     if($ttj<@line2 && $line1[$ti] eq $line2[$ttj]){
-      $tj=$ttj;
-      last search;
-     }
-    }
-   }
-   if($ti>=@line1){$tj=@line2;}
-   if($tj>=@line2){$ti=@line1;}
-   my $f;
-   $ret.=$i+1<$ti?int($i+1).",$ti":$ti;
-   if($i==$ti){$ret.="a";$f=0;}
-   elsif($j==$tj){$ret.="d";$f=1;}
-   else{$ret.="c";$f=2;}
-   $ret.=$j+1<$tj?int($j+1).",$tj":$tj;
-   $ret.="\n";
-   while($i<$ti){
-    $ret.="< $tl1[$i]";
-    $i++;
-   }
-   $ret.="---\n" if $f==2;
-   while($j<$tj){
-    $ret.="> $tl2[$j]";
-    $j++;
-   }
-  }
-  $i++;$j++;
- }
- $ret.="no deference\n" if $c==@line1 || $c==@line2;
-
- return split(/(?<=\n)/,$ret);
-}
+line=$(sed 's/\x1b\[[0-9;]*m//g' < /dev/stdin)
+while [ $it -gt 0 ];do
+line=$(diff $wflag <(echo "$line" | grep '^-\|^< ' | sed -e 's/^-\|^< //') <(echo "$line" | grep '^+\|^> ' | sed -e 's/^+\|^> //'))
+it=$(($it - 1))
+done
+echo "$line"
