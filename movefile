@@ -1,0 +1,44 @@
+#!/usr/bin/env perl
+
+my($from,$relto,$absto);
+if(@ARGV<2){print "usage:\n $0 file-to-move relative-path [moveflag [reverseflag]]\n\n moveflag:\n  1: git mv\n  2: leave symlink\n  4: copy(save old)\n";exit(1);}
+
+($from,$relto,$moveflag,$reverse)=@ARGV;
+$absto=&rel2abs($relto,$from);
+if($reverse){($from,$absto)=($absto,$from);}
+
+if(!-e $from){print "file $from not exist.\n";exit(2);}
+if(-e $absto){print "file $absto exists. override? ";exit(2) if <STDIN>!~/y/;unlink $absto;}
+
+if($moveflag&4){
+    open(my $f,'<',$from);open(my $g,'>',$absto);while(<$f>){print $g $_;}close($g);close($f);
+    if($moveflag&1){print `git add $absto`;}
+}else{
+    if($moveflag&1){print `git mv $from $absto`;}
+    else{rename($from,$absto);}
+}
+
+if($moveflag&2){symlink(&abs2rel($absto,$from),$from);if($moveflag&1){print `git add $from`;}}
+
+# input 0: relto frompath
+# output abspath of relto from frompath
+sub rel2abs{
+    my($tfile,$ffile,@df,@dt);
+    @df=split(/\//,$_[1]);$ffile=pop(@df);
+    ($tfile=$_[0])=~s/.+\///;
+    @dt=split(/\//,$_[0]);
+    if($tfile eq ''){$tfile=$ffile;pop(@dt) if $dt[$#dt] eq '';}else{$tfile=pop(@dt);}
+    while($dt[0] eq '..' || $dt[0] eq '.'){if(shift(@dt) eq '..'){pop(@df);}}
+    return join("/",@df,@dt,$tfile);
+}
+
+# input 0: absto frompath
+# output relpath of absto from frompath
+sub abs2rel{
+    my($tfile,$ffile,@df,@dt,@dir);
+    @df=split(/\//,$_[1]);$ffile=pop(@df);
+    @dt=split(/\//,$_[0]);$tfile=pop(@dt);
+    while(@df && $df[0] eq $dt[0]){shift(@dt);shift(@df);}
+    while(@df){shift(@df);unshift(@dt,'..');}
+    return join("/",@dt,$tfile);
+}
