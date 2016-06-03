@@ -16,17 +16,13 @@ j=$i
 k=0
 while [ $j -gt 0 -a $hash != $hashes[$i] ];do
  ret=$(git log -1 ${hashes[$i]}..$hash --pretty='%H')
-echo "$i,$j ${hashes[$i]}=$ret ${hashes[$i]}"
  k=$(expr $j % 2)
  j=$(expr $j / 2)
-echo "$i:$j+$k"
  if [ "$ret" = $hash ];then
   i=$(expr $i - $j - $k)
-echo '-'
  else
   i=$(expr $i + $j + $k)
   j=$(expr $j + $k)
-echo '+'
  fi
 done
 while [ $i -gt 0 -a "${hashes[$i]}" != $hash -a "$(git log -1 ${hashes[$i]} --pretty='%p'|grep ' ')" = "" ];do i=$(expr $i - 1);done
