@@ -26,9 +26,13 @@ while [ "$1" != "" ];do
  shift
 done
 
+ql='^-\|^< '
+qr='^+\|^> '
 line=$(sed 's/\x1b\[[0-9;]*m//g' < /dev/stdin)
 while [ $it -gt 0 ];do
-line=$(diff $wflag <(echo "$line" | grep '^-\|^< ' | sed -e 's/^-\|^< //') <(echo "$line" | grep '^+\|^> ' | sed -e 's/^+\|^> //'))
+line=$(diff $wflag <(echo "$line" | grep -G $ql | sed -e 's/^-\|^< //') <(echo "$line" | grep -G $qr | sed -e 's/^+\|^> //'))
 it=$(($it - 1))
+ql='^< '
+qr='^> '
 done
 echo "$line"
