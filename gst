@@ -8,4 +8,4 @@ elif [ -e ".git/rebase-apply/original-commit" ];then
   target=$(cat .git/rebase-apply/original-commit)
 fi
 
-git l -1 $target -p "$@"
+git l -1 $target "$@"
