@@ -16,7 +16,7 @@ if $amend;then
   if [ "$issueno" != "" ];then
     arg[0]="refs #"$issueno" "${arg[0]}
   fi
-  git commit --amend -m "${arg[0]}"
+  git commit --amend -m "${arg[@]}"
 else
   issueno=$(get_issueno)
   if [ "$issueno" ] ; then
