@@ -5,8 +5,8 @@ hash=$1
 else
 hash='HEAD'
 fi
-
+shift
 
 if ! git rev-parse $hash 1>/dev/null 2>/dev/null;then echo -en "'$hash' is not something represents commit\n";exit 1;fi
 if [ "$(git log -1 $hash --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$hash' is not merge commit\n";exit 1;fi
-diff <(git diff $hash^1...$hash^2) <(git diff $hash^1...$hash)
+diff <(git diff $hash^1...$hash^2 $@) <(git diff $hash^1...$hash $@)
