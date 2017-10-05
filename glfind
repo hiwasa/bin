@@ -9,13 +9,13 @@ shift
 head=$(git rev-parse $head)
 hash=$(git rev-parse $hash)
 
-hashes=($(git log $head --first-parent --pretty='format:%H'))
+hashes=($(git rev-list $head --first-parent))
 hashlast=${#hashes[@]}
 i=$(expr $hashlast / 2)
 j=$i
 k=0
 while [ $j -gt 0 -a $hash != $hashes[$i] ];do
- ret=$(git log -1 ${hashes[$i]}..$hash --pretty='%H')
+ ret=$(git rev-list -1 ${hashes[$i]}..$hash)
  k=$(expr $j % 2)
  j=$(expr $j / 2)
  if [ "$ret" = $hash ];then
