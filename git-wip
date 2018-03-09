@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -n "$1" ];then
+ git commit --allow-empty -m "wip:$*"
+else
+ git commit --allow-empty -m "wip"
+fi

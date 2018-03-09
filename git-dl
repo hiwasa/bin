@@ -1,0 +1,8 @@
+#!/bin/bash
+
+branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+if [ "$branch" != "" ] && git show-ref --quiet "origin/$branch";then
+ git l "origin/$branch".. --reverse "$@"
+else
+ git l `git merge-base origin HEAD`..  --reverse "$@"
+fi

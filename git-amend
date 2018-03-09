@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ -n "$1" ];then
+ git commit --amend -m "$*"
+else
+ git commit --amend -C HEAD
+fi
