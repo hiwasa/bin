@@ -1,5 +1,6 @@
 #!/bin/bash
 
+if ! git rev-parse --git-dir >/dev/null;then exit 1;fi
 if [ -n "$1" ];then
  git commit --amend -m "$*"
 else

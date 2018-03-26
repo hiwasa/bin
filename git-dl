@@ -1,5 +1,6 @@
 #!/bin/bash
 
+if ! git rev-parse --git-dir >/dev/null;then exit 1;fi
 branch=$(git symbolic-ref --short HEAD 2>/dev/null)
 if [ "$branch" != "" ] && git show-ref --quiet "origin/$branch";then
  git l "origin/$branch".. --reverse "$@"
