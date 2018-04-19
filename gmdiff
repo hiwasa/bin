@@ -1,12 +1,20 @@
 #!/bin/bash
 
-if [ -n "$1" ];then
-hash=$1
+merge=""
+head=""
+if [ -n "$1" -a "${1:0:1}" != "-" ];then
+ merge=$1
+ shift
 else
-hash='HEAD'
+ merge='HEAD'
 fi
-shift
+if [ -n "$1" -a "${1:0:1}" != "-" ];then
+ head=$1
+ shift
+else
+ head=$merge
+fi
 
-if ! git rev-parse $hash 1>/dev/null 2>/dev/null;then echo -en "'$hash' is not something represents commit\n";exit 1;fi
-if [ "$(git log -1 $hash --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$hash' is not merge commit\n";exit 1;fi
-diff <(git diff $hash^1...$hash^2 $@) <(git diff $hash^1...$hash $@)
+if ! git rev-parse $merge 1>/dev/null 2>/dev/null;then echo -en "'$merge' is not something represents commit\n";exit 1;fi
+if [ "$(git log -1 $merge --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$merge' is not merge commit\n";exit 1;fi
+diff <(git diff $merge^1...$merge^2 $@) <(git diff $merge^1...$head $@)
