@@ -1,0 +1,7 @@
+#!/bin/bash
+
+GIT_EDITOR='sed -i "s/pick/e/"' git rebase -i ${1:-origin}
+while [ -e .git/rebase-merge -o -e .git/rebase-apply ];do
+ GIT_COMMITTER_DATE=$(gst --pretty='%cd') GIT_COMMITTER_NAME=$(gst --pretty='%cn') GIT_COMMITTER_EMAIL=$(gst --pretty='%ce') git commit -C $(gst --pretty='%h') --amend
+ git rebase --continue 2>/dev/null
+done
