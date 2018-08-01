@@ -4,7 +4,8 @@ dir=$(git rev-parse --git-dir)
 if [ $? != 0 ];then exit $?;fi
 if [ $dir != '.git' ];then cd ${dir%/.git};fi
 GIT_EDITOR='sed -i "s/pick/e/"' git rebase -i ${1:-origin}
-while [ -e .git/rebase-merge -o -e .git/rebase-apply ];do
- GIT_COMMITTER_DATE=$(gst --pretty='%cd') GIT_COMMITTER_NAME=$(gst --pretty='%cn') GIT_COMMITTER_EMAIL=$(gst --pretty='%ce') git commit -C $(gst --pretty='%h') --amend
+while [ -e .git/rebase-apply ];do
+ hash=$(cat .git/rebase-apply/original-commit)
+ GIT_COMMITTER_DATE=$(git log -1 $hash --pretty='%cd') GIT_COMMITTER_NAME=$(git log -1 $hash --pretty='%cn') GIT_COMMITTER_EMAIL=$(git log -1 $hash --pretty='%ce') git commit -C $(git log -1 $hash --pretty='%h') --amend
  git rebase --continue 2>/dev/null
 done
