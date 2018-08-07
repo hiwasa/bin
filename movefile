@@ -14,7 +14,15 @@ if($moveflag&4){
     open(my $f,'<',$from);open(my $g,'>',$absto);while(<$f>){print $g $_;}close($g);close($f);
     if($moveflag&1){print `git add $absto`;}
 }else{
-    if($moveflag&1){print `git mv $from $absto`;}
+    if($moveflag&1){
+        ($dir=$from)=~s!/[^/]+$!/!;
+        $dir=`git -C $dir rev-parse --git-dir|sed -E 's!/\\.git\$!/!'` if !-e $dir.'.git';
+        die if $@;
+        chomp($dir);
+        $from=substr($from,length($dir));
+        $absto=substr($absto,length($dir));
+        print `git -C $dir mv $from $absto`;
+    }
     else{rename($from,$absto);}
 }
 
