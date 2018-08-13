@@ -4,4 +4,4 @@ if ! git rev-parse --git-dir >/dev/null 2>&1;then echo use inside git;exit 1;fi
 if [ "$1" = "" ];then echo -e "usage: ./${0##*/} branch\n get pull-request name and labels";exit;fi
 repo=$(git config 'remote.origin.url'|sed 's/.*://')
 branch=$1
-curl -s -H 'Authorization: bearer '${GITHUB_TOKEN} -X POST -d '{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(headRefName:\u0022'${branch}'\u0022,first:9){nodes{url,title,labels(first:9){nodes{name}}}}}}"}' 'https://api.github.com/graphql'|jq .|grep 'url\|title\|name'
+curl -s -H 'Authorization: bearer '${GITHUB_TOKEN} -X POST -d '{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(headRefName:\u0022'${branch}'\u0022,first:9){nodes{url,title,labels(first:9){nodes{name}}}}}}"}' 'https://api.github.com/graphql'|tr '"' '\n'|sed '/^,$/{g;s/$/"/;p;s/.*//;x;d;};/{$/{H;x;s/^\n//;s/\n/"/g;p;s/.*//;x;d;};/^}/{x;s/$/"/;p;x;p;s/.*//;x;d;};1h;2,$H;x;s/^\n/"/;s/\n/"/g;$p;x;d;'|grep 'url\|title\|name'
