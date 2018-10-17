@@ -4,8 +4,24 @@ dir=$(git rev-parse --git-dir)
 if [ $? != 0 ];then exit $?;fi
 if [ $dir != '.git' ];then cd ${dir%/.git};fi
 
+head=''
+base=''
+opts=()
+while [ $# -gt 0 ];do
+ if [ ${1:0:1} = '-' ];then
+  opts=("${opts[@]}" $1)
+ elif [ "$base" = "" ];then
+  base=$1
+ elif [ "$head" = "" ];then
+  head=$1
+ fi
+ shift
+done
+
+if [ "$head" = "" ];then head=$base;base='';fi
+
 if [ ! -e .git/rebase-apply -a ! -e .git/rebase-merge ];then
- GIT_EDITOR='sed -i "" -e "s/pick/e/"' git rebase -i ${1:-origin}
+ GIT_EDITOR='sed -i "" -e "s/pick/e/"' git rebase -i ${base:-origin} ${head} "${opts[@]}"
 fi
 while [ -e .git/rebase-apply -o -e .git/rebase-merge ];do
  GIT_COMMITTER_DATE=$(git log-their --pretty='%cd') GIT_COMMITTER_NAME=$(git log-their --pretty='%cn') GIT_COMMITTER_EMAIL=$(git log-their --pretty='%ce') git commit -C $(git log-their --pretty='%h') --amend
