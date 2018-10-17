@@ -5,8 +5,8 @@ opt=();
 diffopt=();
 while [ "$1" != "" ];do
     if [ "$1" = "-ww" ];then diffopt=(${diffopt[@]} '-w')
-    elif ! git log -1 $1 1>/dev/null 2>&1;then echo 'invalid arg '$1;exit 1
-    elif [ "${1:0:1}" = "-" ];then opt=(${opt[@]} $1)
+    elif ! git log -1 "$1" 1>/dev/null 2>&1;then echo 'invalid arg '$1;exit 1
+    elif [ "${1:0:1}" = "-" ];then opt=(${opt[@]} "$1")
     elif [ "$hash1" = "" ];then hash1=$1
     elif [ "$hash2" = "" ];then hash2=$1
     fi
