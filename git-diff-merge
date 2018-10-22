@@ -2,19 +2,20 @@
 
 merge=""
 head=""
-if [ -n "$1" -a "${1:0:1}" != "-" ];then
- merge=$1
- shift
-else
- merge='HEAD'
-fi
-if [ -n "$1" -a "${1:0:1}" != "-" ];then
- head=$1
- shift
-else
- head=$merge
-fi
+opts=()
+while [ $# -gt 0 ];do
+  if [ "${1:0:1}" = "-" ];then
+    opts=("${opts[@]}" "$1")
+  elif [ ! -n "$merge" ];then
+    merge=$1
+    head=$1
+  elif [ ! -n "$head" ];then
+    head=$1
+  fi
+  shift
+done
+merge=${merge:-HEAD}
 
 if ! git rev-parse $merge 1>/dev/null 2>/dev/null;then echo -en "'$merge' is not something represents commit\n";exit 1;fi
 if [ "$(git log -1 $merge --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$merge' is not merge commit\n";exit 1;fi
-diff <(git diff $merge^1...$merge^2 $@) <(git diff $merge^1...$head $@)
+diff <(git diff $merge^1...$merge^2 "$@") <(git diff $merge^1...$head "$@")
