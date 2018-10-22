@@ -3,5 +3,5 @@
 if [ -z "$2" ];then exit 1;fi
 if [ -z "$(git log -1 $2)" ];then exit 1;fi
 
-repo=$(git config --list|grep 'remote.origin.url'|sed 's/.*://;s/\/.*//')
+repo=$(git config 'remote.origin.url'|sed 's!^.*:\(.*\)/.*!\1!')
 git merge $2 -m "Merge pull request #$1 from $repo/$2" --no-ff
