@@ -24,6 +24,7 @@ if [ ! -e .git/rebase-apply -a ! -e .git/rebase-merge ];then
  GIT_EDITOR='sed -i "" -e "s/pick/e/"' git rebase -i --keep-empty ${base:-origin} ${head} "${opts[@]}"
 fi
 while [ -e .git/rebase-apply -o -e .git/rebase-merge ];do
+ if ! git diff-index --quiet HEAD;then git commit --allow-empty --allow-empty-message -m '';fi
  GIT_COMMITTER_DATE=$(git log-theirs --pretty='%cd') GIT_COMMITTER_NAME=$(git log-theirs --pretty='%cn') GIT_COMMITTER_EMAIL=$(git log-theirs --pretty='%ce') git commit -C $(git log-theirs --pretty='%h') --amend --allow-empty
  if [ $? != 0 ];then exit $?;fi
  git rebase --continue 2>/dev/null
