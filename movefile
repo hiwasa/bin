@@ -12,7 +12,13 @@ if(-e $absto){print "file $absto exists. override? ";exit(2) if <STDIN>!~/y/;unl
 
 if($moveflag&4){
     open(my $f,'<',$from);open(my $g,'>',$absto);while(<$f>){print $g $_;}close($g);close($f);
-    if($moveflag&1){print `git add $absto`;}
+    if($moveflag&1){
+        ($dir=$from)=~s!/[^/]+$!/!;
+        $dir=`git -C $dir rev-parse --git-dir|sed -E 's!/\\.git\$!/!'` if !-e $dir.'.git';
+        die if $@;
+        chomp($dir);
+        print `git -C $dir add $absto`;
+    }
 }else{
     if($moveflag&1){
         ($dir=$from)=~s!/[^/]+$!/!;
