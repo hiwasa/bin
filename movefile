@@ -11,7 +11,7 @@ if(!-e $from){print "file $from not exist.\n";exit(2);}
 if(-e $absto){print "file $absto exists. override? ";exit(2) if <STDIN>!~/y/;unlink $absto;}
 
 if($moveflag&4){
-    open(my $f,'<',$from);open(my $g,'>',$absto);while(<$f>){print $g $_;}close($g);close($f);
+    &copy($from,$absto);
     if($moveflag&1){
         ($dir=$from)=~s!/[^/]+$!/!;
         $dir=`git -C $dir rev-parse --git-dir|sed -E 's!/\\.git\$!/!'` if !-e $dir.'.git';
@@ -33,6 +33,16 @@ if($moveflag&4){
 }
 
 if($moveflag&2){symlink(&abs2rel($absto,$from),$from);if($moveflag&1){print `git add $from`;}}
+
+sub copy{
+    my($from,$absto)=@_;
+    if(-d $from){
+        mkdir($absto);
+        opendir(my $d,$from);while(readdir($d)){&copy($from.'/'.$_,$absto.'/'.$_) if !/^\.\.?$/;}closedir($d);
+    }else{
+        open(my $f,'<',$from);open(my $g,'>',$absto);while(<$f>){print $g $_;}close($g);close($f);
+    }
+}
 
 # input 0: relto frompath
 # output abspath of relto from frompath
