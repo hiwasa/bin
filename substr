@@ -1,5 +1,8 @@
-#!/usr/bin/env perl
+#!/bin/bash
 
-if($ARGV[0]<1){print "require arg 1\n";exit 1;}
-if($ARGV[1]){$s=$ARGV[0];$e=$ARGV[1];}else{$s=0;$e=$ARGV[0];}
-while(<STDIN>){chomp;my($p,$ee);$ee=$e;while($ee<length($_)){$p=ord(substr($_,$ee,1));if($p>127 && $p<192){$ee++;}else{last;}}print substr($_,$s,$ee)."\n";}
+if [ ! -p /dev/stdin ];then echo stdin required;exit 1;fi
+if [ $# -lt 1 ];then echo require arg 1;exit 1;fi
+s=$1
+e=$2
+if [ $# -lt 2 ];then e=$s;s=1;else s=$(($s+1));e=$(($s+$e));fi
+cut -b $s'-'$e
