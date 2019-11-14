@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ $# -lt 2 -o "$1" = "" ];then echo no enough args. >&2;exit 1;fi
+hash=$1
+shift
+if [ "$1" = "--" ];then shift;fi
+
+git rev-list --reverse "$hash"|while read h;do
+  git diff --quiet "$h"~1 "$h" -- "$@" && continue
+  git diff "$h"~1 "$h" -- "$@"|git apply --index - || break
+  if ! git diff --quiet HEAD -- "$@";then
+    git add -- "$@"
+    git commit --no-verify --reuse-message "$h" || break
+  fi
+done
