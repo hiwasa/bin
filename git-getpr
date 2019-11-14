@@ -22,6 +22,6 @@ repo=$(git config 'remote.origin.url'|sed 's/.*://')
 if [ "$all" != "" ];then
   query='{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(states:OPEN,first:99){nodes{headRefName,url,title,labels(first:9){nodes{name}}}}}}"}'
 else
-  query='{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(headRefName:\u0022'${branch}'\u0022,first:9){nodes{url,title,labels(first:9){nodes{name}}}}}}"}'
+  query='{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(headRefName:\u0022'${branch}'\u0022,first:9){nodes{url,title,state,labels(first:9){nodes{name}}}}}}"}'
 fi
 curl -s -H 'Authorization: bearer '"${GITHUB_TOKEN}" -X POST -d "$query" 'https://api.github.com/graphql'
