@@ -17,5 +17,8 @@ while [ "$1" != "" ];do
 done
 
 if [ "$hash1" = "" ];then echo 'no arg set';exit 1;fi
+if ! git rev-parse --quiet --verify "$from" >/dev/null;then echo 'base commit not exist';exit 1;fi
+if ! git rev-parse --quiet --verify "$hash1" >/dev/null;then echo 'dest commit not exist';exit 1;fi
+if [ -n "$hash2" ] && ! git rev-parse --quiet --verify "$hash2" >/dev/null;then echo 'comp commit not exist';exit 1;fi
 
 diff -a $diffopt <(git log -p "$from..$hash1" "${opt[@]}") <(git log -p "$from..$hash2" "${opt[@]}")
