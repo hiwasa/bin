@@ -16,6 +16,6 @@ while [ $# -gt 0 ];do
 done
 merge=${merge:-HEAD}
 
-if ! git rev-parse $merge 1>/dev/null 2>/dev/null;then echo -en "'$merge' is not something represents commit\n";exit 1;fi
-if [ "$(git log -1 $merge --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$merge' is not merge commit\n";exit 1;fi
-diff <(git diff $merge^1...$merge^2 "$@") <(git diff $merge^1...$head "$@")
+if ! git rev-parse "$merge" 1>/dev/null 2>/dev/null;then echo -en "'$merge' is not something represents commit\n";exit 1;fi
+if [ "$(git log -1 "$merge" --pretty='%p' | sed -e '/ /d')" != "" ];then echo -en "'$merge' is not merge commit\n";exit 1;fi
+diff <(git diff "$merge"^1..."$merge"^2 "$@") <(git diff "$merge"^1..."$head" "$@")

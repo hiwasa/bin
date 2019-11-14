@@ -14,7 +14,7 @@ for F in $*;do
         git update-index --no-skip-worktree
     fi
     if [ "$(git status -s)" ];then
-        IGNORES=("${IGNORES[@]}" $F)
+        IGNORES=("${IGNORES[@]}" "$F")
     else
         echo error in recog
         break

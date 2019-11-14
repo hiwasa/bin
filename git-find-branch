@@ -6,19 +6,19 @@ type=$(git cat-file $hash -t)
 if [ "$2" != "" ];then head=$2;else head="HEAD";fi
 if [ "$type" != 'commit' ];then echo -en "'$hash' is not something represents commit\nuse -h or --help\n";exit;fi
 shift
-head=$(git rev-parse $head)
-hash=$(git rev-parse $hash)
+head=$(git rev-parse "$head")
+hash=$(git rev-parse "$hash")
 
-hashes=($(git rev-list $head --first-parent))
+hashes=($(git rev-list "$head" --first-parent))
 hashlast=${#hashes[@]}
 i=$(expr $hashlast / 2)
 j=$i
 k=0
-while [ $j -gt 0 -a $hash != $hashes[$i] ];do
- ret=$(git rev-list -1 ${hashes[$i]}..$hash)
+while [ $j -gt 0 -a "$hash" != $hashes[$i] ];do
+ ret=$(git rev-list -1 "${hashes[$i]}..$hash")
  k=$(expr $j % 2)
  j=$(expr $j / 2)
- if [ "$ret" = $hash ];then
+ if [ "$ret" = "$hash" ];then
   i=$(expr $i - $j - $k)
  else
   i=$(expr $i + $j + $k)
@@ -26,5 +26,5 @@ while [ $j -gt 0 -a $hash != $hashes[$i] ];do
  fi
 done
 while [ $i -gt 0 -a "${hashes[$i]}" != $hash -a "$(git log -1 ${hashes[$i]} --pretty='%p'|grep ' ')" = "" ];do i=$(expr $i - 1);done
-echo ${hashes[$i]}
+echo "${hashes[$i]}"
 exit

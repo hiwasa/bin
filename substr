@@ -5,4 +5,4 @@ if [ $# -lt 1 ];then echo require arg 1;exit 1;fi
 s=$1
 e=$2
 if [ $# -lt 2 ];then e=$s;s=1;else s=$(($s+1));e=$(($s+$e));fi
-cut -b $s'-'$e
+cut -b "$s-$e"

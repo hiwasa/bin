@@ -32,6 +32,6 @@ if [ "$file" = "" ];then
     return
 fi
 
-if [ ! -e $file ];then echo "no file $file exist";exit 1;fi
+if [ ! -e "$file" ];then echo "no file $file exist";exit 1;fi
 
-diff $arg <(git show ${branch}:$gitfile) <(cat $file)
+diff $arg <(git show "${branch}:${gitfile}") <(cat "$file")

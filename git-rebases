@@ -2,6 +2,6 @@
 
 if [ $# -lt 2 ];then echo too few args;exit 1;fi
 branch=$1
-cmd=$2
+cmd="$2"
 shift 2
-GIT_EDITOR='sed -i "" -e "'$cmd'"' git rebase -i "$branch" "$@"
+GIT_EDITOR='sed -i "" -e '"'$cmd'" git rebase -i "$branch" "$@"

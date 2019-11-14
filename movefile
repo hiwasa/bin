@@ -7,24 +7,24 @@ relto=$2
 moveflag=${3:-0}
 reverse=$4
 
-absto=$(dirname $from)'/'$relto
-if [ ${absto: -1:1} = '/' ];then absto=$absto$(basename $from);fi
+absto=$(dirname "$from")'/'$relto
+if [ "${absto: -1:1}" = '/' ];then absto=$absto$(basename "$from");fi
 if [ "$reverse" != "" ];then tmp=$absto;absto=$from;from=$tmp;fi
 
-if [ ! -e $from ];then echo 'file '$from' not exist.';exit 2;fi
-if [ -e $absto ];then
- read -p 'file '$absto' exists. override? ' override
+if [ ! -e "$from" ];then echo 'file '$from' not exist.';exit 2;fi
+if [ -e "$absto" ];then
+ read -p 'file '"$absto"' exists. override? ' override
  if [ "${override:0:1}" != "y" ];then exit 2;fi
- if [ $from != $absto ];then unlink $absto;fi
+ if [ "$from" != "$absto" ];then unlink "$absto";fi
 fi
 
 function copy(){
  local from=$1 absto=$2
- if [ -d $from ];then
-  mkdir $absto
-  builtin ls $from|while read f;do copy $from'/'$f $absto'/'$f;done
+ if [ -d "$from" ];then
+  mkdir "$absto"
+  builtin ls "$from"|while read f;do copy "$from/$f" "$absto/$f";done
  else
-  cat $from > $absto
+  cat "$from" > "$absto"
  fi
 }
 function bithas(){
@@ -32,28 +32,28 @@ function bithas(){
 }
 function gitdir(){
  local dir=${1%/*}
- if [ ! -e $dir'/.git' ];then dir=$(git -C ${from%/*} rev-parse --git-dir|sed -E 's!/\.git$!!');fi
- if [ ! -e $dir'/.git' ];then exit 1;fi
+ if [ ! -e "$dir"'/.git' ];then dir=$(git -C "${from%/*}" rev-parse --git-dir|sed -E 's!/\.git$!!');fi
+ if [ ! -e "$dir"'/.git' ];then exit 1;fi
  echo $dir
 }
 
-if bithas $moveflag 4;then
- copy $from $absto
- if bithas $moveflag 1;then
-  dir=$(gitdir $from)
-  git -C $dir add -- ${absto#$dir/}
+if bithas "$moveflag" 4;then
+ copy "$from" "$absto"
+ if bithas "$moveflag" 1;then
+  dir=$(gitdir "$from")
+  git -C "$dir" add -- "${absto#$dir/}"
  fi
-elif bithas $moveflag 1;then
- dir=$(gitdir $from)
- if [ $(uname) = 'Darwin' -a $(tr '[A-Z]' '[a-z]' <<< $from) = $(tr '[A-Z]' '[a-z]' <<< $absto) ];then force='--force';fi
- git -C $dir mv $force ${from#$dir/} ${absto#$dir/}
+elif bithas "$moveflag" 1;then
+ dir=$(gitdir "$from")
+ if [ $(uname) = 'Darwin' -a $(tr '[A-Z]' '[a-z]' <<< "$from") = $(tr '[A-Z]' '[a-z]' <<< "$absto") ];then force='--force';fi
+ git -C "$dir" mv $force "${from#$dir/}" "${absto#$dir/}"
 else
- mv $from $absto
+ mv "$from" "$absto"
 fi
 
-if bithas $moveflag 2;then
- ln -s $absto $from
- if bithas $moveflag 1;then
-  git add -- $from
+if bithas "$moveflag" 2;then
+ ln -s "$absto" "$from"
+ if bithas "$moveflag" 1;then
+  git add -- "$from"
  fi
 fi

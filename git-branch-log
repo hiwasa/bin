@@ -6,11 +6,11 @@ if [ "$1" = "" ];then
 else
  hash=$1
 fi
-git rev-parse $hash 1>/dev/null 2>/dev/null
+git rev-parse "$hash" 1>/dev/null 2>/dev/null
 if [ $? -gt 0 ];then echo -en "'$hash' is not something represents commit\nuse -h or --help\n";exit;fi
 shift
-if [ "$(git log -1 $hash --pretty='%p' | sed -e '/ /d')" = "" ];then
- git log $hash^1..$hash $*
+if [ "$(git log -1 "$hash" --pretty='%p' | sed -e '/ /d')" = "" ];then
+ git log "$hash^1..$hash" "$@"
 else
- echo $hash is not a merge-commit.
+ echo "$hash" is not a merge-commit.
 fi

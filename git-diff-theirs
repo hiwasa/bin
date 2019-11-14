@@ -4,9 +4,9 @@ args=()
 dargs=()
 while [ $# -gt 0 ];do
   if [ ${1:0:3} = '-d-' ];then
-    dargs=(${dargs[@]} ${1:2})
+    dargs=("${dargs[@]}" "${1:2}")
   else
-    args=(${args[@]} $1)
+    args=("${args[@]}" "$1")
   fi
   shift
 done
