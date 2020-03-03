@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if git diff-index --quiet HEAD;then
+ git rebase --skip
+ exit
+fi
+if [ -e ".git/rebase-merge/stopped-sha" -a "$(git diff --cached)" ];then
+ git commit -C `cat .git/rebase-merge/stopped-sha`
+fi
+if [ $? -eq 0 ];then
+ git rebase --continue
+fi
