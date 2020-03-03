@@ -6,6 +6,9 @@ if git diff-index --quiet HEAD;then
 fi
 if [ -e ".git/rebase-merge/stopped-sha" -a "$(git diff --cached)" ];then
  git commit -C `cat .git/rebase-merge/stopped-sha`
+elif [ -e ".git/REVERT_HEAD" -a "$(git diff --cached)" ];then
+ git commit -C `cat .git/REVERT_HEAD`
+ exit
 fi
 if [ $? -eq 0 ];then
  git rebase --continue
