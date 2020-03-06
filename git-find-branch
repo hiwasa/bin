@@ -26,5 +26,8 @@ while [ $j -gt 0 -a "$hash" != $hashes[$i] ];do
  fi
 done
 while [ $i -gt 0 -a "${hashes[$i]}" != $hash -a "$(git log -1 ${hashes[$i]} --pretty='%p'|grep ' ')" = "" ];do i=$(expr $i - 1);done
+if ! git merge-base --is-ancestor "$hash" "${hashes[$i]}";then
+  exit 1
+fi
 echo "${hashes[$i]}"
 exit
