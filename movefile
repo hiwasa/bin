@@ -31,9 +31,8 @@ function bithas(){
  test $(($1 & $2)) -eq $2
 }
 function gitdir(){
- local dir=${1%/*}
- if [ ! -e "$dir"'/.git' ];then dir=$(git -C "${from%/*}" rev-parse --show-toplevel);fi
- if ! git -C "$dir" --is-inside-work-tree >/dev/null 2>&1;then exit 1;fi
+ local dir=$(git -C "${1%/*}" rev-parse --show-toplevel)
+ if [ $? -ne 0 ];then exit $?;fi
  echo $dir
 }
 
