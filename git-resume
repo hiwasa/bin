@@ -4,10 +4,11 @@ if git diff-index --quiet HEAD;then
  git rebase --skip
  exit
 fi
-if [ -e ".git/rebase-merge/stopped-sha" -a "$(git diff --cached)" ];then
- git commit -C `cat .git/rebase-merge/stopped-sha`
-elif [ -e ".git/REVERT_HEAD" -a "$(git diff --cached)" ];then
- git commit -C `cat .git/REVERT_HEAD`
+dir=$(git rev-parse --git-dir)
+if [ -e "$dir/rebase-merge/stopped-sha" -a "$(git diff --cached)" ];then
+ git commit -C $(cat "$dir/rebase-merge/stopped-sha")
+elif [ -e "$dir/REVERT_HEAD" -a "$(git diff --cached)" ];then
+ git commit -C $(cat "$dir/REVERT_HEAD")
  exit
 fi
 if [ $? -eq 0 ];then

@@ -1,11 +1,12 @@
 #!/bin/bash
 
-if [ -e ".git/rebase-apply/original-commit" ];then
-  target=$(cat .git/rebase-apply/original-commit)
-elif [ -e ".git/rebase-merge/stopped-sha" ];then
-  target=$(cat .git/rebase-merge/stopped-sha)
-elif [ -e ".git/sequencer/todo" ];then
-  target=$(cat .git/sequencer/todo | head -1 | awk '{print $2}')
+dir=$(git rev-parse --git-dir)
+if [ -e "$dir/rebase-apply/original-commit" ];then
+  target=$(cat "$dir/rebase-apply/original-commit")
+elif [ -e "$dir/rebase-merge/stopped-sha" ];then
+  target=$(cat "$dir/rebase-merge/stopped-sha")
+elif [ -e "$dir/sequencer/todo" ];then
+  target=$(cat "$dir/sequencer/todo" | head -1 | awk '{print $2}')
 fi
 
 git log -1 $target "$@"

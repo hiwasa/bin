@@ -32,8 +32,8 @@ function bithas(){
 }
 function gitdir(){
  local dir=${1%/*}
- if [ ! -e "$dir"'/.git' ];then dir=$(git -C "${from%/*}" rev-parse --git-dir|sed -E 's!/\.git$!!');fi
- if [ ! -e "$dir"'/.git' ];then exit 1;fi
+ if [ ! -e "$dir"'/.git' ];then dir=$(git -C "${from%/*}" rev-parse --show-toplevel);fi
+ if ! git -C "$dir" --is-inside-work-tree >/dev/null 2>&1;then exit 1;fi
  echo $dir
 }
 
