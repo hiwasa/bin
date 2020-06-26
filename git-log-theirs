@@ -8,4 +8,4 @@ elif [ -e ".git/sequencer/todo" ];then
   target=$(cat .git/sequencer/todo | head -1 | awk '{print $2}')
 fi
 
-git l -1 $target "$@"
+git log -1 $target "$@"
