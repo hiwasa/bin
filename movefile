@@ -1,11 +1,39 @@
 #!/bin/bash
 
-if [ $# -lt 2 ];then echo -e 'usage:\n '${0##*/}' file-to-move relative-path [moveflag [reverseflag]]\n\n moveflag:\n  1: git mv\n  2: leave symlink\n  4: copy(save old)\n';exit 1;fi
+unset from relto absto usegit copy symlink reverse
 
-from=$1
-relto=$2
-moveflag=${3:-0}
-reverse=$4
+while [ $# -gt 0 ];do
+ if [ "${1:0:1}" = "-" ];then
+  if [ "${1:1:1}" != "-" -a "${1/g/}" != "$1" ] || [ "$1" = "--git" ];then
+   usegit=1
+  fi
+  if [ "${1:1:1}" != "-" -a "${1/c/}" != "$1" ] || [ "$1" = "--copy" ];then
+   copy=1
+  fi
+  if [ "${1:1:1}" != "-" -a "${1/s/}" != "$1" ] || [ "$1" = "--symlink" ];then
+   symlink=1
+  fi
+  if [ "${1:1:1}" != "-" -a "${1/r/}" != "$1" ] || [ "$1" = "--reverse" ];then
+   reverse=1
+  fi
+ elif [ "$from" = "" ];then
+  from=$1
+ elif [ "$relto" = "" ];then
+  relto=$1
+ fi
+ shift
+done
+
+if [ "$relto" = "" ];then cat << END;exit 1;fi
+usage:
+ ${0##*/} [option] file-to-move relative-path
+
+option:
+ --git
+ --symlink
+ --copy
+ --reverse
+END
 
 absto=$(dirname "$from")'/'$relto
 if [ "${absto: -1:1}" = '/' ];then absto=$absto$(basename "$from");fi
@@ -27,22 +55,19 @@ function copy(){
   cat "$from" > "$absto"
  fi
 }
-function bithas(){
- test $(($1 & $2)) -eq $2
-}
 function gitdir(){
  local dir=$(git -C "${1%/*}" rev-parse --show-toplevel)
  if [ $? -ne 0 ];then exit $?;fi
  echo $dir
 }
 
-if bithas "$moveflag" 4;then
+if [ "$copy" != "" ];then
  copy "$from" "$absto"
- if bithas "$moveflag" 1;then
+ if [ "$usegit" != "" ];then
   dir=$(gitdir "$from")
   git -C "$dir" add -- "${absto#$dir/}"
  fi
-elif bithas "$moveflag" 1;then
+elif [ "$usegit" != "" ];then
  dir=$(gitdir "$from")
  if [ $(uname) = 'Darwin' -a $(tr '[A-Z]' '[a-z]' <<< "$from") = $(tr '[A-Z]' '[a-z]' <<< "$absto") ];then force='--force';fi
  git -C "$dir" mv $force "${from#$dir/}" "${absto#$dir/}"
@@ -50,9 +75,9 @@ else
  mv "$from" "$absto"
 fi
 
-if bithas "$moveflag" 2;then
+if [ "$symlink" != "" ];then
  ln -s "$absto" "$from"
- if bithas "$moveflag" 1;then
+ if [ "$usegit" != "" ];then
   git add -- "$from"
  fi
 fi
