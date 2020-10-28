@@ -18,7 +18,7 @@ while [ $# -gt 0 ];do
 done
 if [ "$branch" = "" -a "$all" = "" ];then echo -e "usage: ./${0##*/} branch\n get pull-request name and labels\n\n options:\n  -a, --all";exit;fi
 
-repo=$(git config 'remote.origin.url'|sed 's/.*://')
+repo=$(git config 'remote.origin.url'|sed 's/.*://;s/\.git$//;')
 if [ "$all" != "" ];then
   query='{"query":"query{repository(owner:\u0022'${repo%/*}'\u0022,name:\u0022'${repo#*/}'\u0022){pullRequests(states:OPEN,first:99){nodes{headRefName,url,title,labels(first:9){nodes{name}}}}}}"}'
 else
