@@ -8,13 +8,13 @@ while [ $# -gt 0 ];do
     opts=("${opts[@]}" "$1")
   elif [ ! -n "$merge" ];then
     merge=$1
-    head=$1
   elif [ ! -n "$head" ];then
     head=$1
   fi
   shift
 done
 merge=${merge:-HEAD}
+if [ ! -n "$head" ];then head=$merge;fi
 
 if ! git rev-parse --quiet --verify "$merge" 1>/dev/null;then echo "'$merge' is not something represents commit";exit 1;fi
 if [ "$(git log -1 "$merge" --pretty='%p' | sed -e '/ /d')" != "" ];then echo "'$merge' is not merge commit";exit 1;fi
