@@ -1,5 +1,17 @@
 #!/bin/bash
 
+dir=$(git rev-parse --git-dir)
+if [ -e "$dir/sequencer" ];then
+ if ! git diff --exit-code;then
+  exit 1
+ elif git diff --cached --quiet;then
+  git cherry-pick --skip
+ else
+  git commit -F "$dir/CHERRY_PICK_HEAD"
+  git cherry-pick --continue
+ fi
+ exit
+fi
 if git diff-index --quiet HEAD;then
  git rebase --skip
  exit
