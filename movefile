@@ -50,7 +50,7 @@ function copy(){
  local from=$1 absto=$2
  if [ -d "$from" ];then
   mkdir "$absto"
-  builtin ls "$from"|while read f;do copy "$from/$f" "$absto/$f";done
+  ls "$from"|while read f;do copy "$from/$f" "$absto/$f";done
  else
   cat "$from" > "$absto"
  fi
