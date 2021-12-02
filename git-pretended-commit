@@ -1,0 +1,18 @@
+#!/bin/bash
+
+target=''
+opts=()
+while [ $# -gt 0 ];do
+ if [ ${1:0:1} = '-' ];then
+  opts=("${opts[@]}" $1)
+ elif [ "$target" = "" ];then
+  target=$1
+ else
+  opts=("${opts[@]}" $1)
+ fi
+ shift
+done
+
+if [ "$target" = "" ];then echo target commit required.;exit 1;fi
+
+GIT_COMMITTER_DATE=$(git log -1 "$target" --pretty='%cd') GIT_COMMITTER_NAME=$(git log -1 "$target" --pretty='%cn') GIT_COMMITTER_EMAIL=$(git log -1 "$target" --pretty='%ce') git commit -C $(git log -1 "$target" --pretty='%h') "${opts[@]}"
