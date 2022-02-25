@@ -20,8 +20,6 @@ while [ $# -gt 0 ];do
  shift
 done
 
-if [ "$head" = "" ];then head=$base;base='';fi
-
 if [ ! -e "$dir/rebase-apply" -a ! -e "$dir/rebase-merge" ];then
  GIT_EDITOR='sed -i "" -e "s/pick/e/"' git rebase -i --keep-empty ${base:-origin} ${head} "${opts[@]}"
 elif ! git diff-index --quiet HEAD;then
