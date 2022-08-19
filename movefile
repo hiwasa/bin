@@ -35,7 +35,11 @@ option:
  --reverse
 END
 
-absto=$(dirname "$from")'/'$relto
+if [ "${relto:0:1}" = "/" ];then
+ absto=$relto
+else
+ absto=$(dirname "$from")'/'$relto
+fi
 if [ "${absto: -1:1}" = '/' ];then absto=$absto$(basename "$from");fi
 if [ "$reverse" != "" ];then tmp=$absto;absto=$from;from=$tmp;fi
 
