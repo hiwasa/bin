@@ -26,6 +26,7 @@ elif ! git diff-index --quiet HEAD;then
  git commit --allow-empty --allow-empty-message -C $(git log-theirs --pretty='%h') > /dev/null
 fi
 while [ -e "$dir/rebase-apply" -o -e "$dir/rebase-merge" ];do
+ if git log -1 HEAD^ --pretty='format:%p' "${base:-origin}.." | grep -q ' ';then break;fi
  if [ "$(git log -1 --pretty='format:%s')" = "$(git log-theirs --pretty='%s')" ];then
   GIT_COMMITTER_DATE=$(git log-theirs --pretty='%cd') GIT_COMMITTER_NAME=$(git log-theirs --pretty='%cn') GIT_COMMITTER_EMAIL=$(git log-theirs --pretty='%ce') git commit -C $(git log-theirs --pretty='%h') --amend --allow-empty > /dev/null
  fi
