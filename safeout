@@ -1,0 +1,5 @@
+#!perl
+
+if(-t STDIN){print "stdin required.\n";exit 1;}
+
+while(<>){s&([\x00-\x09\x0b-\x1f]+)&"\x1b[2m".join("",map{sprintf("%02x",ord($_))}split(//,$1))."\x1b[22m"&eg;print;}
