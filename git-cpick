@@ -1,13 +1,27 @@
 #!/bin/bash
 
-if [ $# -lt 2 -o "$1" = "" ];then echo no enough args. >&2;exit 1;fi
-hash=$1
-shift
-if [ "$1" = "--" ];then shift;fi
+hash=''
+flag=()
+while [ $# -gt 0 ];do
+  if [ "$1" = "--" ];then
+    shift
+    break
+  elif [ "${1:0:1}" = "-" ];then
+    if [ "$1" = "--force" -o "${1/f/}" != "$1" ];then
+      flag[0]=1
+    fi
+  elif git rev-list --quiet "$1" 2>/dev/null;then
+    hash="$1"
+  else
+    break
+  fi
+  shift
+done
+if [ "$hash" = "" ];then echo no enough args. >&2;exit 1;fi
 
 git rev-list --reverse "$hash"|while read h;do
   git diff --quiet "$h"~1 "$h" -- "$@" && continue
-  git diff "$h"~1 "$h" -- "$@"|git apply --index - || break
+  git diff "$h"~1 "$h" -- "$@"|if [ -z "${flag[0]}" ];then git apply --index -;else git apply --index --reject -;fi || break
   if ! git diff --quiet HEAD -- "$@";then
     git add -- "$@"
     git commit --no-verify --reuse-message "$h" || break
