@@ -5,4 +5,4 @@ if [ $# -lt 1 ];then echo require arg 1;exit 1;fi
 s=$1
 e=$2
 if [ $# -lt 2 ];then e=$s;s=0;fi
-perl -pe 's/^.{'$s'}((?:[\x00-\x7f]|[\x80-\xdf]|[\xe0-\xef].|[\xf0-\xff]..){0,'$e'})(?![\x80-\xbf]).*/$1/'
+perl -pe 's/^(?:[\x00-\x7f]|[\xc0-\xff]|[\x80-\xbf]+){'$s'}[\x80-\xbf]*((?:[\x00-\x7f]|[\xc0-\xff]|[\x80-\xbf]+){0,'$e'})(?![\x80-\xbf]).*/$1/'
