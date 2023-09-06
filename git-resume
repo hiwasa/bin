@@ -7,7 +7,7 @@ if [ -e "$dir/sequencer" ];then
  elif git diff --cached --quiet;then
   git cherry-pick --skip
  else
-  git commit -F "$dir/CHERRY_PICK_HEAD"
+  git commit --reuse-message="$(cat "$dir/CHERRY_PICK_HEAD")"
   git cherry-pick --continue
  fi
  exit
@@ -19,9 +19,9 @@ fi
 if git diff --cached --quiet;then
  :
 elif [ -e "$dir/rebase-merge/stopped-sha" ];then
- git commit -C $(cat "$dir/rebase-merge/stopped-sha")
+ git commit --reuse-message="$(cat "$dir/rebase-merge/stopped-sha")"
 elif [ -e "$dir/REVERT_HEAD" ];then
- git commit -C $(cat "$dir/REVERT_HEAD")
+ git commit --reuse-message="$(cat "$dir/REVERT_HEAD")"
  exit
 fi
 if [ $? -eq 0 ];then
