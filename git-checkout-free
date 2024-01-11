@@ -7,7 +7,7 @@ fi
 BRANCH=$1
 shift
 IGNORES=()
-for F in $*;do
+for F in "$@";do
     if [ "$(git help recog)" ];then
         git recog "$F"
     else
@@ -30,7 +30,7 @@ else
         echo error in checkout
     fi
 fi
-if [ "${BRANCH}" ];then
+if [ "${BRANCH}" != "" ];then
     git stash pop > /dev/null
     if [ $? -ne 0 ];then
         echo error in pop
