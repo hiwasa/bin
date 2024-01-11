@@ -1,7 +1,7 @@
 #!/bin/bash
 
 dir=$(git rev-parse --git-dir)
-if [ -e "$dir/sequencer" ];then
+if [ -e "$dir/sequencer" ] || ([ -e "$dir/CHERRY_PICK_HEAD" ] && ! cmp --silent "$dir/CHERRY_PICK_HEAD" "$dir/rebase-merge/stopped-sha");then
  if ! git diff --exit-code;then
   exit 1
  elif git diff --cached --quiet;then
