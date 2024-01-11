@@ -8,7 +8,7 @@ BRANCH=$1
 shift
 IGNORES=()
 for F in "$@";do
-    if [ "$(git help recog)" ];then
+    if git help recog|grep --quiet '.';then
         git recog "$F"
     else
         git update-index --no-skip-worktree
@@ -37,7 +37,7 @@ if [ "${BRANCH}" != "" ];then
     fi
 fi
 for F in ${IGNORES[@]};do
-    if [ "$(git help ignore)" ];then
+    if git help ignore|grep --quiet '.';then
         git ignore "$F"
     else
         git update-index --skip-worktree
