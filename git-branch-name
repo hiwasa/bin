@@ -2,7 +2,7 @@
 
 if ! git rev-parse --git-dir >/dev/null;then exit $?;fi
 if [ -e $(git rev-parse --git-path 'rebase-merge') ];then
- cat $(git rev-parse --git-path 'rebase-merge/head-name') | sed -e 's!^befs/heads!!'
+ cat $(git rev-parse --git-path 'rebase-merge/head-name') | sed -e 's!^refs/heads!!'
 elif [ -e $(git rev-parse --git-path 'dir/rebase-apply') ];then
  cat $(git rev-parse --git-path 'rebase-apply/head-name') | sed -e 's!^refs/heads!!'
 else
