@@ -2,4 +2,15 @@
 
 if(-t STDIN){print "stdin required.\n";exit 1;}
 
-while(<>){s&([\x00-\x09\x0b-\x1f]+)&"\x1b[2m".join("",map{sprintf("%02x",ord($_))}split(//,$1))."\x1b[22m"&eg;print;}
+%opts=('a','ascii');
+%opt=();
+@arg=();
+foreach(@ARGV){
+  if(/^--(.+)/){$opt{$1}=1;}
+  elsif(/^-(.+)/){for(split(//,$1)){$opt{$opts{$_}}=1 if $opts{$_};}}
+  else{push(@arg,$_);}
+}
+
+$q="\x00-\x09\x0b-\x1f\x7f";
+$q.="\x80\-\xff" if $opt['ascii'};
+while(<STDIN>){s&([$q]+)&"\x1b[2m".join("",map{sprintf("%02x",ord($_))}split(//,$1))."\x1b[22m"&ego;print;}
