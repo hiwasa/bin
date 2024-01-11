@@ -8,13 +8,13 @@ BRANCH=$1
 shift
 IGNORES=()
 for F in "$@";do
-    if git help recog|grep --quiet '.';then
-        git recog "$F"
+    if git help reveal|grep --quiet '.';then
+        git reveal "$F"
     else
         git update-index --no-skip-worktree
     fi
     if [ $? -ne 0 ];then
-        echo error in recog
+        echo error in reveal
         break
     elif ! git diff --quiet;then
         IGNORES=("${IGNORES[@]}" "$F")
@@ -22,7 +22,7 @@ for F in "$@";do
 done
 git stash
 if [ $? -ne 0 ];then
-    echo error in save
+    echo error in stash
     BRANCH=""
 else
     git checkout "${BRANCH}"
