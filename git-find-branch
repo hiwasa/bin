@@ -2,10 +2,8 @@
 
 if [ "$1" = "" -o "$1" = "--help" -o "$1" = "-h" ];then echo -en "usage: ${0##*/} hash [options..]\n git log find -- find branch in which target hash contributes\n\n options:\n  options for git-log\n";exit 0;fi
 hash=$1
-type=$(git cat-file $hash -t)
-if [ "$2" != "" ];then head=$2;else head="HEAD";fi
-if [ "$type" != 'commit' ];then echo -en "'$hash' is not something represents commit\nuse -h or --help\n";exit;fi
-shift
+head=${2:-HEAD}
+if [ "$(git cat-file $hash -t)" != 'commit' ];then echo -en "'$hash' is not something represents commit\nuse -h\n";exit;fi
 head=$(git rev-parse "$head")
 hash=$(git rev-parse "$hash")
 
