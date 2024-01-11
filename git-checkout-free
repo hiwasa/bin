@@ -13,11 +13,11 @@ for F in "$@";do
     else
         git update-index --no-skip-worktree
     fi
-    if [ "$(git status -s)" ];then
-        IGNORES=("${IGNORES[@]}" "$F")
-    else
+    if [ $? -ne 0 ];then
         echo error in recog
         break
+    elif ! git diff --quiet;then
+        IGNORES=("${IGNORES[@]}" "$F")
     fi
 done
 git stash
