@@ -1,14 +1,25 @@
 #!perl
 
-if(-t STDIN){print "stdin required.\n";exit 1;}
-
-%opts=('a','ascii');
+%opts=('h','help','a','ascii');
 %opt=();
 @arg=();
 foreach(@ARGV){
   if(/^--(.+)/){$opt{$1}=1;}
   elsif(/^-(.+)/){for(split(//,$1)){$opt{$opts{$_}}=1 if $opts{$_};}}
   else{push(@arg,$_);}
+}
+
+if(-t STDIN || $opt{'help'}){
+  print __FILE__;
+  print << 'END';
+ [opts]
+print stdin while escaping control chars into hexadecimal in gray font
+
+opts:
+  -h, --help : show help
+  -a, --ascii : escape non-ascii chars
+END
+  exit !$opt{'help'};
 }
 
 $q="\x00-\x09\x0b-\x1f\x7f";

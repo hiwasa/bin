@@ -1,6 +1,18 @@
 #!/bin/bash
 
-if [ "$1" = "" -o "$1" = "--help" -o "$1" = "-h" ];then echo -en "usage: ${0##*/} hash [options..]\n git log find -- find branch in which target hash contributes\n\n options:\n  options for git-log\n";exit 0;fi
+if [ "$1" = "" -o "$1" = "--help" -o "$1" = "-h" ];then cat <<_END_
+usage: git ${0##*/git-} <commit> [<ref-commit>]
+ find merge commit in which target commit contributes.and print its hash
+
+ <commit>
+  target commit
+ <ref-commit>
+  search head (default HEAD)
+  useful when searching deeper or commit not merged to HEAD
+  be careful to denote as '<commit>^2' for merge commit to search inside
+_END_
+ exit 0
+fi
 hash=$1
 head=${2:-HEAD}
 if [ "$(git cat-file $hash -t)" != 'commit' ];then echo -en "'$hash' is not something represents commit\nuse -h\n";exit;fi

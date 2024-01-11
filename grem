@@ -1,7 +1,16 @@
 #!/bin/bash
 
-if [ "$1" = "" ];then
- echo -en '$0 dir [option] [command]\noption:\n -d name : dir path of .git\n'
+if [ "$1" = "" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ];then
+ cat << _END_
+${0##*/} dir [option] [command]
+run git on other dir.
+require git >= 1.8.5 to use.
+command: command to pass to git
+option:
+ -d name : dir path of .git
+ -h : show this help
+_END_
+ exit
 fi
 dir=$1
 shift

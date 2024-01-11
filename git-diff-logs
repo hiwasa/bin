@@ -2,11 +2,13 @@
 
 eflag=0
 from=origin/HEAD
+help=0
 opt=();
 diffopt=();
 while [ "$1" != "" ];do
     if [ "$1" = "-ww" ];then diffopt=(${diffopt[@]} '-w')
     elif [ "$1" = "--from" ];then from=$2;shift
+    elif [ "$1" = "--help" -o "1" = "-h" ];then help=1;
     elif ! git log -1 "$1" -- 1>/dev/null 2>&1;then echo 'invalid arg '"$1";exit 1
     elif [ "$1" = "--" ];then opt=(${opt[@]} "$@");shift $#
     elif [ "${1:0:1}" = "-" ];then opt=(${opt[@]} "$1")
@@ -16,7 +18,29 @@ while [ "$1" != "" ];do
     shift
 done
 
-if [ "$hash1" = "" ];then echo 'no arg set';exit 1;fi
+if [ "$hash1" = "" ];then help=2;fi
+if [ $help -gt 0 ];then
+    cat <<_END_
+usage: git ${0##*/git-} [<options>...] <old-commit> <new-commit>
+show diff between logs and their changes
+
+ <options>
+  --ww
+   pass '-w' to diff
+  --from <commit>
+   specify excluding commit (left parameter of two-dots range notation) of each log (default is 'origin/HEAD')
+  (other)
+   same as \`git log\`
+ <old-commit> <new-commit>
+  commits to compare
+_END_
+    if [ $help = 2 ];then
+        echo 'no arg set'
+        exit 1
+    else
+        exit
+    fi
+fi
 if ! git rev-parse --quiet --verify "$from" >/dev/null;then echo 'base commit not exist';exit 1;fi
 if ! git rev-parse --quiet --verify "$hash1" >/dev/null;then echo 'dest commit not exist';exit 1;fi
 if [ -n "$hash2" ] && ! git rev-parse --quiet --verify "$hash2" >/dev/null;then echo 'comp commit not exist';exit 1;fi

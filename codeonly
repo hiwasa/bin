@@ -1,5 +1,13 @@
 #!/bin/bash
 
-if [ -t 0 ];then echo no stdin;exit 1;fi
+if [ -t 0 ];then
+  cat <<_END_
+usage: ${0##*/}
+remove comments and blank lines from STDIN text.
+C-style comment only is currently supported.
+for simplicity, some literal will treated as comment.
+_END_
+  exit 1
+fi
 
 sed '/^ *\/\//d;s/\/\*.*\*\///;/\/\*/,/\*\//d;/^[[:space:]]*$/d;'

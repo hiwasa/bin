@@ -1,11 +1,16 @@
 #!/usr/bin/env perl
 
-if(-t STDIN){print << "--INFO--";
-input file as STDIN
+if(-t STDIN || grep{/^(?:-h|--help)$/}@ARGV){
+  my $this=$0=~s!.*/!!r;
+  print << "--INFO--";
+usage: $this [option]
+convert STDIN chars into hexadecimal codes
+
 option:
- -l newline at '\\n' code, not explicit length
+ -l newline at '\\x0A' code (default is every 16 input chars)
 --INFO--
-exit;}
+  exit 1;
+}
 
 my @flg=();
 while(@ARGV){

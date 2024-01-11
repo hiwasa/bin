@@ -1,8 +1,15 @@
 #!/bin/bash
 
 if [ "$1" = "" -o "$2" = "" ];then
-    echo -e "usage: ${0##*/} branch file...\nless argument"
-    exit
+    cat <<_END_
+usage: ${0##*/} <branch> <files>...
+ checkout target branch without causing conflict of ignored files
+ 'ignore' and 'reveal' command (or alias) will be used to handle ignored files, or 'update-index' if command not exist
+
+ <branch> target branch name to switch
+ <files> ignoring files
+_END_
+    exit 1
 fi
 BRANCH=$1
 shift

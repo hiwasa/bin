@@ -3,7 +3,7 @@ if [ -t 0 ];then
  this_cmd=${0##*/}
  cat << --USAGE--
 usage: (some-command) | $this_cmd
- get diff of diff -- difference between added and deleted
+ get diff of diff -- difference between added and deleted, that is, moved
 
 args:
  iteration : iteration count

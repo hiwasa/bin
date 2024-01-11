@@ -3,11 +3,14 @@
 merge=""
 head=""
 opts=()
+help=0
 while [ $# -gt 0 ];do
   if [ "$1" = "--" ];then
     head=$merge
   fi
-  if [ "${1:0:1}" = "-" -o -n "$head" ];then
+  if [ "$1" = "-h" -o "$1" = "--help" ];then
+    help=1
+  elif [ "${1:0:1}" = "-" -o -n "$head" ];then
     opts=("${opts[@]}" "$1")
   elif [ ! -n "$merge" ];then
     merge=$1
@@ -16,6 +19,22 @@ while [ $# -gt 0 ];do
   fi
   shift
 done
+if [ $help -gt 0 ];then
+  cat <<_END_
+usage: git ${0##*/git-} [<options>...] [<merge-commit>] [<target-commit>]
+show diff between changes introduced by merge commit and changes between commit before merge and commit specified
+main purpose is to check change in merge commit that is not in branch
+
+ <options>
+  same as options for \`git log\`
+ <merge-commit>
+  merge commit to show (default HEAD)
+ <target-commit>
+  commit to compare (default same as <merge-commit>)
+_END_
+  exit
+fi
+
 merge=${merge:-HEAD}
 if [ ! -n "$head" ];then head=$merge;fi
 

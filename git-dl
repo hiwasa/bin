@@ -1,5 +1,15 @@
 #!/bin/bash
 
+if [ "$1" = "--help" -o "$1" = "-h" ];then
+  cat << _END_
+usage: git ${0##*/git-} [<args>...]
+show current branch log in reverse order
+not show pushed commits
+all args are passed to log command
+_END_
+  exit
+fi
+
 if ! git rev-parse --git-dir >/dev/null;then exit 1;fi
 branch=$(git symbolic-ref --short HEAD 2>/dev/null)
 if [ "$branch" != "" ] && git show-ref --quiet "origin/$branch";then

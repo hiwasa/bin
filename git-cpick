@@ -9,6 +9,18 @@ while [ $# -gt 0 ];do
   elif [ "${1:0:1}" = "-" ];then
     if [ "$1" = "--force" -o "${1/f/}" != "$1" ];then
       flag[0]=1
+    elif [ "$1" = "--help" -o "${1/h/}" != "$1" ];then
+      cat <<_END_
+usage: git ${##*/git-} [options] <commit-range> <files>..
+ cherry-pick commits with limited files
+
+ <commit-range>
+  range of commits to cherry-pick
+  for technical reason, only range format is arrowed now
+ <files>
+  target files to apply
+_END_
+      exit
     fi
   elif git rev-list --quiet "$1" 2>/dev/null;then
     hash="$1"
@@ -17,7 +29,7 @@ while [ $# -gt 0 ];do
   fi
   shift
 done
-if [ "$hash" = "" ];then echo no enough args. >&2;exit 1;fi
+if [ "$hash" = "" ];then echo "no enough args. use -h for help." >&2;exit 1;fi
 
 git rev-list --reverse "$hash"|while read h;do
   git diff --quiet "$h"~1 "$h" -- "$@" && continue

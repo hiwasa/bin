@@ -2,13 +2,32 @@
 
 args=()
 dargs=()
+help=0
 while [ $# -gt 0 ];do
-  if [ ${1:0:3} = '-d-' ];then
+  if [ "$1" = "-h" -o "$1" = "--help" ];then
+    help=1
+  elif [ ${1:0:3} = '-d-' ];then
     dargs=("${dargs[@]}" "${1:2}")
   else
     args=("${args[@]}" "$1")
   fi
   shift
 done
+
+if [ $help -gt 0 ];then
+  cat <<_END_
+usage: git ${0##*/git-} [<options>...] <args>...
+show diff between staging and changes in current rebase commit or cherry-pick commit
+
+ <options>
+  -d-<any>
+   pass <any> option to diff
+  (other)
+   anything want to pass to \`git log\` and \`git diff\`
+ <args>
+  anything want to pass to \`git log\` and \`git diff\`
+_END_
+  exit
+fi
 
 diff "${dargs[@]}" <(git log-theirs --patch "${args[@]}") <(git diff --cached "${args[@]}")

@@ -1,5 +1,13 @@
 #!/bin/bash
 
+if [ "$1" = "-h" -o "$1" = "--help" ];then
+  cat <<_END_
+usage: git ${0##*/git-}
+show current branch name while in rebase
+_END_
+  exit 1
+fi
+
 if ! git rev-parse --git-dir >/dev/null;then exit $?;fi
 if [ -e $(git rev-parse --git-path 'rebase-merge') ];then
  cat $(git rev-parse --git-path 'rebase-merge/head-name') | sed -e 's!^refs/heads!!'
