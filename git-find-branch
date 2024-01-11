@@ -7,23 +7,22 @@ if [ "$(git cat-file $hash -t)" != 'commit' ];then echo -en "'$hash' is not some
 head=$(git rev-parse "$head")
 hash=$(git rev-parse "$hash")
 
-hashes=($(git rev-list "$head" --first-parent))
+hashes=($(git rev-list "$hash^..$head" --first-parent))
 hashlast=${#hashes[@]}
 i=$(expr $hashlast / 2)
 j=$i
 k=0
 while [ $j -gt 0 -a "$hash" != "${hashes[$i]}" ];do
- ret=$(git rev-list -1 "${hashes[$i]}..$hash")
  k=$(expr $j % 2)
  j=$(expr $j / 2)
- if [ "$ret" = "$hash" ];then
+ if [ $i -ge $hashlast ] || ! git merge-base --is-ancestor "$hash" "${hashes[$i]}";then
   i=$(expr $i - $j - $k)
  else
   i=$(expr $i + $j + $k)
   j=$(expr $j + $k)
  fi
 done
-while [ $i -gt 0 -a "${hashes[$i]}" != $hash -a "$(git log -1 ${hashes[$i]} --pretty='%p'|grep ' ')" = "" ];do i=$(expr $i - 1);done
+while [ $i -gt 0 ] && [ "${hashes[$i]}" != $hash ] && ! git log -1 ${hashes[$i]} --pretty='%p'|grep --quiet ' ';do i=$(expr $i - 1);done
 if ! git merge-base --is-ancestor "$hash" "${hashes[$i]}";then
   exit 1
 fi
