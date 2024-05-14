@@ -23,5 +23,5 @@ END
 }
 
 $q="\x00-\x09\x0b-\x1f\x7f";
-$q.="\x80\-\xff" if $opt['ascii'};
+$q.="\x80\-\xff" if $opt{'ascii'};
 while(<STDIN>){s&([$q]+)&"\x1b[2m".join("",map{sprintf("%02x",ord($_))}split(//,$1))."\x1b[22m"&ego;print;}
